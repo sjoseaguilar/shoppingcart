@@ -29,10 +29,28 @@ CREATE TABLE shoppingcart.ORDER_HISTORY(
     PRIMARY KEY (ORDER_ID)
 );
 
+CREATE TABLE shoppingcart.WISHLIST(
+	WISH_ID int  NOT NULL AUTO_INCREMENT,
+    USER_ID int,
+    PRODUCT_ID int,
+     PRIMARY KEY (WISH_ID)
+);
+
+
+select * from shoppingcart.USERS
+select * from shoppingcart.PRODUCTS
+select * from shoppingcart.ORDER_HISTORY
+select * from shoppingcart.WISHLIST
+
+drop table shoppingcart.WISHLIST
 
 ALTER TABLE shoppingcart.ORDER_HISTORY
 add FOREIGN KEY (USER_ID) REFERENCES shoppingcart.USERS(USER_ID),
 add FOREIGN KEY (PRODUCT_ID) REFERENCES shoppingcart.PRODUCTS(PRODUCT_ID); 
+
+ALTER TABLE shoppingcart.WISHLIST
+ADD FOREIGN KEY (USER_ID) REFERENCES shoppingcart.USERS(USER_ID),
+ADD FOREIGN KEY (PRODUCT_ID) REFERENCES shoppingcart.PRODUCTS(PRODUCT_ID);
 
 insert into shoppingcart.USERS  values(1, "Sarahi", "Jose", "Yo", "sarahi@hotmail.com", "Coffee");
 

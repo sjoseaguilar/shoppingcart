@@ -8,6 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -16,9 +18,9 @@ import jakarta.persistence.Table;
 public class Product {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="PRODUCT_ID")
-	private int product_id;
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@Column(name="PRODUCT_ID", columnDefinition="numeric", precision=10, scale=0)
+	private long productId;
 	@Column(name="NAME")
 	private String name;
 	@Column(name="PRICE")
@@ -28,19 +30,23 @@ public class Product {
 	@Column(name="DESCRIPTION")
 	private String description;
 	@Column(name="TOTAL_PRODUCTS_INVENTORY")
-	private int total_products_inventory;
+	private int totalProductsInventory;
 	@Column(name="STATUS")
 	private boolean status;
 	
 	@OneToMany(mappedBy="product", cascade=CascadeType.ALL)
 	private Set<OrderHistory> orders;
+	
+	@ManyToOne
+	@JoinColumn(name = "wish_id")
+	private WishList wishes;
 
-	public int getProduct_id() {
-		return product_id;
+	public long getProductId() {
+		return productId;
 	}
 
-	public void setProduct_id(int product_id) {
-		this.product_id = product_id;
+	public void setProductId(long productId) {
+		this.productId = productId;
 	}
 
 	public String getName() {
@@ -75,12 +81,12 @@ public class Product {
 		this.description = description;
 	}
 
-	public int getTotal_products_inventory() {
-		return total_products_inventory;
+	public int getTotalProductsInventory() {
+		return totalProductsInventory;
 	}
 
-	public void setTotal_products_inventory(int total_products_inventory) {
-		this.total_products_inventory = total_products_inventory;
+	public void setTotalProductsInventory(int totalProductsInventory) {
+		this.totalProductsInventory = totalProductsInventory;
 	}
 
 	public boolean isStatus() {
@@ -90,5 +96,21 @@ public class Product {
 	public void setStatus(boolean status) {
 		this.status = status;
 	}
+
+	public Set<OrderHistory> getOrders() {
+		return orders;
+	}
+
+	public void setOrders(Set<OrderHistory> orders) {
+		this.orders = orders;
+	}
+
+	public WishList getWishes() {
+		return wishes;
+	}
+
+	public void setWishes(WishList wishes) {
+		this.wishes = wishes;
+	}	
 	
 }

@@ -16,11 +16,11 @@ import jakarta.persistence.Table;
 public class OrderHistory {
 		
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="ORDER_ID")
-	private int order_id;
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@Column(name="ORDER_ID", columnDefinition="numeric", precision=10, scale=0)
+	private long orderId;
 	@Column(name = "ORDER_DATE")
-	private String order_date;
+	private String orderDate;
 	
 	@ManyToOne
 	@JoinColumn(name="user_id")
@@ -29,31 +29,38 @@ public class OrderHistory {
 	@ManyToOne
 	@JoinColumn(name="product_id")
 	private Product product;
-	
+
+	public long getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(long orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getOrderDate() {
+		return orderDate;
+	}
+
+	public void setOrderDate(String orderDate) {
+		this.orderDate = orderDate;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Product getProduct() {
+		return product;
+	}
+
+	public void setProduct(Product product) {
+		this.product = product;
+	}
 		
-	public int getOrder_id() {
-		return order_id;
-	}
-
-	public void setOrder_id(int order_id) {
-		this.order_id = order_id;
-	}
-
-	public String getOrder_date() {
-		return order_date;
-	}
-
-	public void setOrder_date(String order_date) {
-		this.order_date = order_date;
-	}
-
-
-	public int getProduct_id() {
-		return product_id;
-	}
-
-	public void setProduct_id(int product_id) {
-		this.product_id = product_id;
-	}
 	
 }

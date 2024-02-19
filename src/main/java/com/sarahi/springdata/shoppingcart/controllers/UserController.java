@@ -14,17 +14,14 @@ import com.sarahi.springdata.shoppingcart.repos.UserRepository;
 @RequestMapping("/api")
 public class UserController {
 
+	@Autowired
 	private UserRepository repository;
 	
-	@Autowired
-	UserController(UserRepository repository){
-		this.repository = repository;
-	}
 	
 	//Create a method to insert new users into table shoppingcart.USERS.
 	//If the user already exists, then should notify that the user already exists. You should use email field to validate.
 	//Here use JSON in POSTMAN
-	@RequestMapping(value = "/NEWUSER",method = RequestMethod.POST)
+	@RequestMapping(value = "/NewUser",method = RequestMethod.POST)
 	public User newUser(@RequestBody User user) {  
 		User existingUser = repository.findByEmail(user.getEmail());
 		if(existingUser != null) {
@@ -35,15 +32,15 @@ public class UserController {
 	}
 	
 	//method to update an existing user. The only fields to update should be: email, area_of_interest.
-	@PutMapping("/UPDATEUSER/{USER_ID}")
-	public void updateUserField(@PathVariable("USER_ID")int user_id, @RequestBody User user, String email, String area_of_interest) {
+	@PutMapping("/UpdateUser/{USER_ID}")
+	public void updateUserField(@PathVariable("USER_ID")long user_id, @RequestBody User user, String email, String area_of_interest) {
 		User userUpdate = repository.findById(user_id);
 		if(userUpdate != null) {
 			if(email != null) {
 				userUpdate.setEmail(email);
 			}
 			if(area_of_interest != null) {
-				userUpdate.setArea_of_interest(area_of_interest);
+				userUpdate.setAreaOfInterest(area_of_interest);
 			}
 			repository.save(userUpdate);
 		}
@@ -51,27 +48,27 @@ public class UserController {
 	
 	//Create a method to delete an existing USER
 	//Delete a user, when the user is deleted, then the history would be cleared.	
-	@RequestMapping(value = "/DELETEUSER/{USER_ID}",method = RequestMethod.DELETE)
-	public void deleteUser(@PathVariable("USER_ID")int user_id) {
+	@RequestMapping(value = "/DeleteUser/{USER_ID}",method = RequestMethod.DELETE)
+	public void deleteUser(@PathVariable("USER_ID")long user_id) {
 		User user = repository.findById(user_id);
 		repository.delete(user);	
 	}
 
 	
 	//method to get a list of all existing users
-	@GetMapping(value="/USERS")
+	@GetMapping(value="/Users")
 	public List<User> getUsers(){
 		return repository.findAll();	
 	}
 	
 	//method to get an specific user, filtered by name.
-	@RequestMapping(value="/USERBYNAME/{NAME}", method = RequestMethod.GET)
+	@RequestMapping(value="/UserByName/{NAME}", method = RequestMethod.GET)
 	public List<User> getUserByName(@PathVariable("NAME")String name) {
 		return repository.findByName(name);
 	}
 	
 	//method to get an specific user, filtered by email.
-	@RequestMapping(value="/USERBYEMAIL/{EMAIL}", method = RequestMethod.GET)
+	@RequestMapping(value="/UserByEmail/{EMAIL}", method = RequestMethod.GET)
 	public User getUserByEmail(@PathVariable("EMAIL")String email) {
 		return repository.findByEmail(email);
 	}
