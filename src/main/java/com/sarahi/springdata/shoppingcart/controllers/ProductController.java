@@ -45,8 +45,8 @@ public class ProductController {
 	//Create a method to update an existing product.
 	//The only fields to update should  be: Price, image, description and total_products_inventory
 	@PutMapping("/UpdateProduct/{PRODUCT_ID}")
-	public void updateProductField(@PathVariable("PRODUCT_ID")long product_id, @RequestBody Product product, @RequestParam(defaultValue = "0")int price, byte[] image, String description, @RequestParam(defaultValue = "0")int total_products_inventory) {
-		Product productUpdate = repository.findById(product_id);
+	public void updateProductField(@PathVariable("PRODUCT_ID")long productId, @RequestBody Product product, @RequestParam(defaultValue = "0")int price, byte[] image, String description, @RequestParam(defaultValue = "0")int totalProductsInventory) {
+		Product productUpdate = repository.findById(productId);
 		if(productUpdate != null) {
 			if(price != 0) {
 				productUpdate.setPrice(price);
@@ -57,8 +57,8 @@ public class ProductController {
 			if(description != null) {
 				productUpdate.setDescription(description);
 			}
-			if(total_products_inventory != 0) {
-				productUpdate.setTotalProductsInventory(total_products_inventory);
+			if(totalProductsInventory != 0) {
+				productUpdate.setTotalProductsInventory(totalProductsInventory);
 			}
 			if(image != null) {
 				productUpdate.setImage(image);
@@ -71,8 +71,8 @@ public class ProductController {
 	//Create a method to delete an existing product.
 	//Deletion of a product must be virtual, only column status should be false.
 	@RequestMapping(value = "/DeleteProduct/{PRODUCT_ID}",method = RequestMethod.DELETE)
-	public void deleteProduct(@PathVariable("PRODUCT_ID")long product_id) {
-		Product product = repository.findById(product_id);
+	public void deleteProduct(@PathVariable("PRODUCT_ID")long productId) {
+		Product product = repository.findById(productId);
 		product.setStatus(false);
 		repository.save(product);
 	}

@@ -8,6 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -31,11 +33,7 @@ public class User {
 	@Column(name = "AREA_OF_INTEREST")
 	private String areaOfInterest;
 
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-	private Set<OrderHistory> orders;
 	
-	@OneToOne(mappedBy="user", cascade=CascadeType.ALL)
-	private WishList wishes;
 
 	public long getUserId() {
 		return userId;
@@ -84,29 +82,6 @@ public class User {
 	public void setAreaOfInterest(String areaOfInterest) {
 		this.areaOfInterest = areaOfInterest;
 	}
-
-	public Set<OrderHistory> getOrders() {
-		return orders;
-	}
-
-	public void setOrders(Set<OrderHistory> orders) {
-		this.orders = orders;
-	}
-
-	public WishList getWishes() {
-		return wishes;
-	}
-
-	public void setWishes(WishList wishes) {
-		this.wishes = wishes;
-	}
-	
-	public void addOrder(OrderHistory order) {
-		this.orders.add(order);
-		order.setUser(this);
-	}
-	
-
 
 	
 }

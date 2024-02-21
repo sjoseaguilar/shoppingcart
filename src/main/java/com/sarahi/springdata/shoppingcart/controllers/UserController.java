@@ -33,14 +33,14 @@ public class UserController {
 	
 	//method to update an existing user. The only fields to update should be: email, area_of_interest.
 	@PutMapping("/UpdateUser/{USER_ID}")
-	public void updateUserField(@PathVariable("USER_ID")long user_id, @RequestBody User user, String email, String area_of_interest) {
-		User userUpdate = repository.findById(user_id);
+	public void updateUserField(@PathVariable("USER_ID")long userId, @RequestBody User user, String email, String areaOfInterest) {
+		User userUpdate = repository.findById(userId);
 		if(userUpdate != null) {
 			if(email != null) {
 				userUpdate.setEmail(email);
 			}
-			if(area_of_interest != null) {
-				userUpdate.setAreaOfInterest(area_of_interest);
+			if(areaOfInterest != null) {
+				userUpdate.setAreaOfInterest(areaOfInterest);
 			}
 			repository.save(userUpdate);
 		}
@@ -49,8 +49,8 @@ public class UserController {
 	//Create a method to delete an existing USER
 	//Delete a user, when the user is deleted, then the history would be cleared.	
 	@RequestMapping(value = "/DeleteUser/{USER_ID}",method = RequestMethod.DELETE)
-	public void deleteUser(@PathVariable("USER_ID")long user_id) {
-		User user = repository.findById(user_id);
+	public void deleteUser(@PathVariable("USER_ID")long userId) {
+		User user = repository.findById(userId);
 		repository.delete(user);	
 	}
 

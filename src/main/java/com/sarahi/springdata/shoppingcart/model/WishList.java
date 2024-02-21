@@ -1,16 +1,20 @@
 package com.sarahi.springdata.shoppingcart.model;
 
-import java.util.HashSet;
+
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 
@@ -23,12 +27,18 @@ public class WishList {
 	@Column(name="WISH_ID", columnDefinition="numeric", precision=10, scale=0)
 	private long wishId;
 
-	@OneToOne
-	@JoinColumn(name = "user_id")
-	private User user;
+	//@OneToOne(cascade = CascadeType.ALL)
+	//@JoinColumn(name="user_id")
+	//private User user;
 
-	@OneToMany(mappedBy="wishes", cascade=CascadeType.ALL)
-	private Set<Product> products;
+	
+	@OneToOne (cascade = CascadeType.PERSIST)
+	@JoinColumn(name="user_id")
+	private User user;
+	
+	@OneToOne(cascade = CascadeType.PERSIST)
+	@JoinColumn(name="product_id")
+	private Product product;
 
 	public long getWishId() {
 		return wishId;
@@ -50,20 +60,13 @@ public class WishList {
 		this.user = user;
 	}
 
-	public Set<Product> getProducts() {
-		return products;
+	public Product getProduct() {
+		return product;
 	}
 
-	public void setProducts(Set<Product> products) {
-		this.products = products;
+	public void setProduct(Product product) {
+		this.product = product;
 	}
 
-	public void addProduct(Product product) {
-		if(products == null) {
-			products = new HashSet<>();
-		}
-		this.products.add(product);
-		product.setWishes(this);
-	}
 
 }
