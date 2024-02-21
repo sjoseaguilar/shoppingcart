@@ -58,3 +58,9 @@ DELETE
 {
         "user_id" : 2
 }
+
+PUT
+/api/Products/Update/{PRODUCT_ID}
+{
+        "totalProductsInventory": 5
+}
