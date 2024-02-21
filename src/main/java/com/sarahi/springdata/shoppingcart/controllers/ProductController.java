@@ -1,16 +1,20 @@
 package com.sarahi.springdata.shoppingcart.controllers;
 
 import java.util.List;
-
+import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.sarahi.springdata.shoppingcart.model.Product;
+import com.sarahi.springdata.shoppingcart.model.User;
 import com.sarahi.springdata.shoppingcart.repos.ProductRepository;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/Products")
 public class ProductController {
 	
 	@Autowired
@@ -19,16 +23,16 @@ public class ProductController {
 
 	//Create a method to insert new products  into table shoppingcart.PRODUCTS.
 	//If the product already exists, then the total_products_inventory field should increase by 1.
-	@RequestMapping(value = "/NewProduct",method = RequestMethod.POST)
-	public Product newProduct(@RequestBody Product product) {
+	@RequestMapping(value = "/New",method = RequestMethod.POST)
+	public ResponseEntity<Object> newProduct(@RequestBody Product product) {
 		String productName = product.getName();
 		productName = productName.substring(0,1).toUpperCase()+ productName.substring(1);
 		Product existingProduct = repository.findByName(productName);
 		if(existingProduct != null) {
 			int actualInventory = existingProduct.getTotalProductsInventory() + 1;
 			existingProduct.setTotalProductsInventory(actualInventory);
-			System.out.println("The product already exists, there are: " + actualInventory + " " + existingProduct.getName());
-			return repository.save(existingProduct);
+			String msg = "The product already exists, there are: " + actualInventory + " " + existingProduct.getName();
+			return ResponseEntity.ok(msg);
 		}
 		product.setName(productName);
 		if(product.getTotalProductsInventory() == 0)
@@ -39,38 +43,48 @@ public class ProductController {
 			product.setStatus(true);
 		}
 		
-		return repository.save(product);
+		repository.save(product);
+		return ResponseEntity.ok(product);
 	}
 	
 	//Create a method to update an existing product.
 	//The only fields to update should  be: Price, image, description and total_products_inventory
-	@PutMapping("/UpdateProduct/{PRODUCT_ID}")
-	public void updateProductField(@PathVariable("PRODUCT_ID")long productId, @RequestBody Product product, @RequestParam(defaultValue = "0")int price, byte[] image, String description, @RequestParam(defaultValue = "0")int totalProductsInventory) {
-		Product productUpdate = repository.findById(productId);
-		if(productUpdate != null) {
-			if(price != 0) {
-				productUpdate.setPrice(price);
-			}
-			if(image != null) {
-				productUpdate.setImage(image);
-			}
-			if(description != null) {
-				productUpdate.setDescription(description);
-			}
-			if(totalProductsInventory != 0) {
-				productUpdate.setTotalProductsInventory(totalProductsInventory);
-			}
-			if(image != null) {
-				productUpdate.setImage(image);
-			}
-			repository.save(productUpdate);
+	@PutMapping("/Update/{PRODUCT_ID}")
+	public ResponseEntity<Object> updateProductField(@PathVariable("PRODUCT_ID")long productId, @RequestBody Map<String, Object> product) {
+		try {
+			Optional<Product> productUpdate = Optional.of(repository.findById(productId));		
 		}
+		catch(Exception e) {
+			String errorMsg = "ProductId incorrect";
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMsg);
+		}
+		
+		Optional<Product> productUpdate = Optional.of(repository.findById(productId));	
+				
+		if(product.get("price") != null) {
+			int newPrice = (int)product.get("price");
+			productUpdate.get().setPrice(newPrice);
+		}
+		if(product.get("image") != null) {
+			byte[] newImage = (byte[])product.get("image");
+			productUpdate.get().setImage(newImage);
+		}
+		if(product.get("description") != null) {
+			String newDesc = (String)product.get("description");
+			productUpdate.get().setDescription(newDesc);
+		}
+		if(product.get("totalProductsInventory") != null) {
+			int newTotal = (int)product.get("totalProductsInventory");
+			productUpdate.get().setTotalProductsInventory(newTotal);
+		}
+
+		return ResponseEntity.ok(productUpdate.get());
 	}
 	
 	
 	//Create a method to delete an existing product.
 	//Deletion of a product must be virtual, only column status should be false.
-	@RequestMapping(value = "/DeleteProduct/{PRODUCT_ID}",method = RequestMethod.DELETE)
+	@RequestMapping(value = "/Delete/{PRODUCT_ID}",method = RequestMethod.DELETE)
 	public void deleteProduct(@PathVariable("PRODUCT_ID")long productId) {
 		Product product = repository.findById(productId);
 		product.setStatus(false);
@@ -79,19 +93,19 @@ public class ProductController {
 	
 	
 	//method to get a list of all existing products
-		@GetMapping(value="/Products")
+		@GetMapping(value="/All")
 		public List<Product> getProducts(){
 			return repository.findAll();	
 		}
 		
 	//method to get an specific product, filtered by name.
-	@RequestMapping(value="/ProductByName/{NAME}", method = RequestMethod.GET)
+	@RequestMapping(value="/ByName/{NAME}", method = RequestMethod.GET)
 	public Product getUserByName(@PathVariable("NAME")String name) {
 		return repository.findByName(name);
 	}
 	
 	//method to get a list of products, filtered by price
-	@RequestMapping(value="/ProductsByPrice/{PRICE}", method = RequestMethod.GET)
+	@RequestMapping(value="/ByPrice/{PRICE}", method = RequestMethod.GET)
 	public List<Product> getUserByEmail(@PathVariable("PRICE")int price) {
 		return repository.findByPrice(price);
 	}

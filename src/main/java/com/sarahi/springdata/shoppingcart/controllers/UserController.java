@@ -15,7 +15,7 @@ import com.sarahi.springdata.shoppingcart.repos.OrderHistoryRepository;
 import com.sarahi.springdata.shoppingcart.repos.UserRepository;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/Users")
 public class UserController {
 
 	@Autowired
@@ -28,7 +28,7 @@ public class UserController {
 	//Create a method to insert new users into table shoppingcart.USERS.
 	//If the user already exists, then should notify that the user already exists. You should use email field to validate.
 	//Here use JSON in POSTMAN
-	@RequestMapping(value = "/NewUser",method = RequestMethod.POST)
+	@RequestMapping(value = "/New",method = RequestMethod.POST)
 	public ResponseEntity<Object> newUser(@RequestBody User user) {  
 		User existingUser = userRepository.findByEmail(user.getEmail());
 		if(existingUser != null) {
@@ -40,7 +40,7 @@ public class UserController {
 	}
 	
 	//method to update an existing user. The only fields to update should be: email, area_of_interest.
-	@PutMapping("/UpdateUser/{USER_ID}")
+	@PutMapping("/Update/{USER_ID}")
 	public ResponseEntity<Object> updateUserField(@PathVariable("USER_ID")long userId, @RequestBody Map<String, String> user) {
 		try {
 			Optional<User> userUpdate = Optional.of(userRepository.findById(userId));	
@@ -64,7 +64,7 @@ public class UserController {
 	
 	//Create a method to delete an existing USER
 	//Delete a user, when the user is deleted, then the history would be cleared.	
-	@RequestMapping(value = "/DeleteUser/{USER_ID}",method = RequestMethod.DELETE)
+	@RequestMapping(value = "/Delete/{USER_ID}",method = RequestMethod.DELETE)
 	public ResponseEntity<Object> deleteUser(@PathVariable("USER_ID")long userId) {
 		try {
 			Optional<User> user = Optional.of(userRepository.findById(userId));	
@@ -87,19 +87,20 @@ public class UserController {
 	}
 
 	//method to get a list of all existing users
-	@GetMapping(value="/Users")
+	@GetMapping(value="/All")
 	public List<User> getUsers(){
 		return userRepository.findAll();	
 	}
 	
 	//method to get an specific user, filtered by name.
-	@RequestMapping(value="/UserByName/{NAME}", method = RequestMethod.GET)
+	@RequestMapping(value="/ByName/{NAME}", method = RequestMethod.GET)
 	public List<User> getUserByName(@PathVariable("NAME")String name) {
 		return userRepository.findByName(name);
+		
 	}
 	
 	//method to get an specific user, filtered by email.
-	@RequestMapping(value="/UserByEmail/{EMAIL}", method = RequestMethod.GET)
+	@RequestMapping(value="/ByEmail/{EMAIL}", method = RequestMethod.GET)
 	public User getUserByEmail(@PathVariable("EMAIL")String email) {
 		return userRepository.findByEmail(email);
 	}
