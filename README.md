@@ -64,3 +64,9 @@ PUT
 {
         "totalProductsInventory": 5
 }
+
+PUT
+/api/Users/Update/{USER_ID}"
+{
+        "email": "nuevo@hotmail.com"
+}
