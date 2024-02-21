@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.sarahi.springdata.shoppingcart.model.OrderHistory;
 import com.sarahi.springdata.shoppingcart.model.User;
+import com.sarahi.springdata.shoppingcart.repos.OrderHistoryRepository;
 import com.sarahi.springdata.shoppingcart.repos.UserRepository;
 
 @RestController
@@ -18,27 +19,31 @@ import com.sarahi.springdata.shoppingcart.repos.UserRepository;
 public class UserController {
 
 	@Autowired
-	private UserRepository repository;
+	private UserRepository userRepository;
+	
+	@Autowired
+	private OrderHistoryRepository orderRepository;
 	
 	
 	//Create a method to insert new users into table shoppingcart.USERS.
 	//If the user already exists, then should notify that the user already exists. You should use email field to validate.
 	//Here use JSON in POSTMAN
 	@RequestMapping(value = "/NewUser",method = RequestMethod.POST)
-	public User newUser(@RequestBody User user) {  
-		User existingUser = repository.findByEmail(user.getEmail());
+	public ResponseEntity<Object> newUser(@RequestBody User user) {  
+		User existingUser = userRepository.findByEmail(user.getEmail());
 		if(existingUser != null) {
-			System.out.println("The user with email: " + user.getEmail() + " already exists");
-			return null;
+			String existingEmail = "The user with email: " + user.getEmail() + " already exists, try with a diferent email";
+			return ResponseEntity.ok(existingEmail);
 		}
-		return repository.save(user);	
+		userRepository.save(user);	
+		return ResponseEntity.ok(user);
 	}
 	
 	//method to update an existing user. The only fields to update should be: email, area_of_interest.
 	@PutMapping("/UpdateUser/{USER_ID}")
 	public ResponseEntity<Object> updateUserField(@PathVariable("USER_ID")long userId, @RequestBody Map<String, String> user) {
 		try {
-			Optional<User> userUpdate = Optional.of(repository.findById(userId));	
+			Optional<User> userUpdate = Optional.of(userRepository.findById(userId));	
 			String newEmail = user.get("email");
 			String newArea = user.get("areaOfInterest");
 			if(newEmail != null) {
@@ -47,7 +52,7 @@ public class UserController {
 			if(newArea != null) {
 				userUpdate.get().setAreaOfInterest(newArea);
 			}
-			return ResponseEntity.ok(repository.findById(userId));
+			return ResponseEntity.ok(userRepository.findById(userId));
 			
 		}
 		catch(Exception e) {
@@ -60,28 +65,43 @@ public class UserController {
 	//Create a method to delete an existing USER
 	//Delete a user, when the user is deleted, then the history would be cleared.	
 	@RequestMapping(value = "/DeleteUser/{USER_ID}",method = RequestMethod.DELETE)
-	public void deleteUser(@PathVariable("USER_ID")long userId) {
-		User user = repository.findById(userId);
-		repository.delete(user);	
+	public ResponseEntity<Object> deleteUser(@PathVariable("USER_ID")long userId) {
+		try {
+			Optional<User> user = Optional.of(userRepository.findById(userId));	
+			
+			List<OrderHistory> orders = orderRepository.findByUser(user.get());
+			for (OrderHistory order : orders) {
+				order.setProduct(null);
+				orderRepository.save(order);
+				orderRepository.delete(order);
+			}
+			
+			userRepository.delete(user.get());
+			return ResponseEntity.ok("User deleted");
+		}
+		catch(Exception e) {
+			String errorMsg = "UserId incorrect";
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMsg);
+		}
+			
 	}
 
-	
 	//method to get a list of all existing users
 	@GetMapping(value="/Users")
 	public List<User> getUsers(){
-		return repository.findAll();	
+		return userRepository.findAll();	
 	}
 	
 	//method to get an specific user, filtered by name.
 	@RequestMapping(value="/UserByName/{NAME}", method = RequestMethod.GET)
 	public List<User> getUserByName(@PathVariable("NAME")String name) {
-		return repository.findByName(name);
+		return userRepository.findByName(name);
 	}
 	
 	//method to get an specific user, filtered by email.
 	@RequestMapping(value="/UserByEmail/{EMAIL}", method = RequestMethod.GET)
 	public User getUserByEmail(@PathVariable("EMAIL")String email) {
-		return repository.findByEmail(email);
+		return userRepository.findByEmail(email);
 	}
 		
 }
