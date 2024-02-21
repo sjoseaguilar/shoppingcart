@@ -1,9 +1,12 @@
 package com.sarahi.springdata.shoppingcart.controllers;
 
 import java.util.List;
-
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.sarahi.springdata.shoppingcart.model.OrderHistory;
@@ -33,17 +36,25 @@ public class UserController {
 	
 	//method to update an existing user. The only fields to update should be: email, area_of_interest.
 	@PutMapping("/UpdateUser/{USER_ID}")
-	public void updateUserField(@PathVariable("USER_ID")long userId, @RequestBody User user, String email, String areaOfInterest) {
-		User userUpdate = repository.findById(userId);
-		if(userUpdate != null) {
-			if(email != null) {
-				userUpdate.setEmail(email);
+	public ResponseEntity<Object> updateUserField(@PathVariable("USER_ID")long userId, @RequestBody Map<String, String> user) {
+		try {
+			Optional<User> userUpdate = Optional.of(repository.findById(userId));	
+			String newEmail = user.get("email");
+			String newArea = user.get("areaOfInterest");
+			if(newEmail != null) {
+				userUpdate.get().setEmail(newEmail);
 			}
-			if(areaOfInterest != null) {
-				userUpdate.setAreaOfInterest(areaOfInterest);
+			if(newArea != null) {
+				userUpdate.get().setAreaOfInterest(newArea);
 			}
-			repository.save(userUpdate);
+			return ResponseEntity.ok(repository.findById(userId));
+			
 		}
+		catch(Exception e) {
+			String errorMsg = "UserId incorrect";
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMsg);
+		}
+		
 	}
 	
 	//Create a method to delete an existing USER
