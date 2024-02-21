@@ -1,4 +1,4 @@
-
+JSON format for each request
 
 POST
 /api/BuyProduct
